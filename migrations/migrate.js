@@ -39,7 +39,9 @@ async function runMigrations() {
             '004_insert_admin_edi.sql',
             '005_create_jalur_table.sql',
             '006_create_kategori_table.sql',
-            '009_create_custom_vehicles_table.sql'
+            '009_create_custom_vehicles_table.sql',
+            '010_add_url_to_jalur_table.sql',
+            '011_create_jalur_status_table.sql'
         ];
 
         for (const migration of migrations) {

@@ -7,7 +7,7 @@ module.exports = (db) => {
     router.post('/traffic/status', (req, res) => {
         console.log('Traffic status request:', req.body);
         const { id_jalur, jumlah_kendaraan } = req.body;
-        
+
         if (!id_jalur || jumlah_kendaraan === undefined) {
             console.log('Missing required fields:', { id_jalur, jumlah_kendaraan });
             return res.status(400).json({ message: 'id_jalur dan jumlah_kendaraan harus diisi' });
@@ -15,7 +15,7 @@ module.exports = (db) => {
 
         // Query untuk mencari kategori berdasarkan jumlah kendaraan
         let queryKategori, queryParams;
-        
+
         if (jumlah_kendaraan === 0) {
             // Jika 0 kendaraan, ambil kategori dengan threshold terkecil (Normal)
             queryKategori = `
@@ -42,7 +42,7 @@ module.exports = (db) => {
                 console.error('Error query kategori:', err);
                 return res.status(500).json({ message: 'DB error', error: err.message });
             }
-            
+
             console.log('Kategori results:', kategoriResults);
             if (kategoriResults.length === 0) {
                 return res.status(404).json({ message: 'Kategori tidak ditemukan untuk jumlah kendaraan ini' });
@@ -50,9 +50,9 @@ module.exports = (db) => {
 
             const kategori = kategoriResults[0];
 
-            // Query untuk mendapatkan durasi berdasarkan jalur dan kategori
+            // Query untuk mendapatkan durasi berdasarkan jalur dan kategori, termasuk URL
             const queryDurasi = `
-                SELECT pd.*, j.nama_jalan, j.lokasi, j.arah, k.nama as kategori_nama
+                SELECT pd.*, j.nama_jalan, j.lokasi, j.arah, j.url, k.nama as kategori_nama
                 FROM pengaturan_durasi pd
                 JOIN jalur j ON pd.id_jalur = j.id
                 JOIN kategori k ON pd.id_kategori = k.id
@@ -61,7 +61,7 @@ module.exports = (db) => {
 
             db.query(queryDurasi, [id_jalur, kategori.id], (err, durasiResults) => {
                 if (err) return res.status(500).json({ message: 'DB error', error: err.message });
-                
+
                 if (durasiResults.length === 0) {
                     return res.status(404).json({ message: 'Durasi tidak ditemukan untuk jalur dan kategori ini' });
                 }
@@ -76,7 +76,8 @@ module.exports = (db) => {
                             id: durasi.id_jalur,
                             nama_jalan: durasi.nama_jalan,
                             lokasi: durasi.lokasi,
-                            arah: durasi.arah
+                            arah: durasi.arah,
+                            url: durasi.url
                         },
                         kategori: {
                             id: kategori.id,

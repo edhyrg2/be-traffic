@@ -1,12 +1,10 @@
 const express = require('express');
-const checkAuth = require('../middlewares/checkAuth');
 const mqtt = require('mqtt');
 
 module.exports = (db) => {
     const router = express.Router();
 
-    // Hanya dapat diakses jika sudah login (dengan session)
-    router.use(checkAuth);
+    // Auth middleware sudah diterapkan secara global di server.js
 
     // Setup MQTT Client untuk publish durasi
     const mqttClient = mqtt.connect('mqtt://localhost:1883'); // Pastikan broker MQTT berjalan di localhost
@@ -51,7 +49,7 @@ module.exports = (db) => {
     // POST durasi
     router.post('/durasi', (req, res) => {
         const { id_jalur, id_kategori, durasi_merah, durasi_kuning, durasi_hijau } = req.body;
-        
+
         if (!id_jalur || !id_kategori || !durasi_merah || !durasi_kuning || !durasi_hijau) {
             return res.status(400).json({ message: 'Semua field harus diisi' });
         }
@@ -71,7 +69,7 @@ module.exports = (db) => {
     router.put('/durasi/:id', (req, res) => {
         const { id } = req.params;
         const { id_jalur, id_kategori, durasi_merah, durasi_kuning, durasi_hijau } = req.body;
-        
+
         if (!id_jalur || !id_kategori || !durasi_merah || !durasi_kuning || !durasi_hijau) {
             return res.status(400).json({ message: 'Semua field harus diisi' });
         }

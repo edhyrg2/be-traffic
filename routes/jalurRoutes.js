@@ -23,14 +23,14 @@ module.exports = (db) => {
 
     // POST tambah jalur
     router.post('/jalur', (req, res) => {
-        const { nama_jalan, lokasi, arah } = req.body;
+        const { nama_jalan, lokasi, arah, url } = req.body;
         
         if (!nama_jalan || !lokasi || !arah) {
-            return res.status(400).json({ message: 'Semua field harus diisi' });
+            return res.status(400).json({ message: 'Nama jalan, lokasi, dan arah harus diisi' });
         }
 
-        db.query('INSERT INTO jalur (nama_jalan, lokasi, arah) VALUES (?, ?, ?)', 
-            [nama_jalan, lokasi, arah], (err, result) => {
+        db.query('INSERT INTO jalur (nama_jalan, lokasi, arah, url) VALUES (?, ?, ?, ?)', 
+            [nama_jalan, lokasi, arah, url], (err, result) => {
             if (err) return res.status(500).json({ message: 'DB error' });
             res.json({ message: 'Jalur berhasil ditambahkan', id: result.insertId });
         });
@@ -39,14 +39,14 @@ module.exports = (db) => {
     // PUT update jalur
     router.put('/jalur/:id', (req, res) => {
         const { id } = req.params;
-        const { nama_jalan, lokasi, arah } = req.body;
+        const { nama_jalan, lokasi, arah, url } = req.body;
 
         if (!nama_jalan || !lokasi || !arah) {
-            return res.status(400).json({ message: 'Semua field harus diisi' });
+            return res.status(400).json({ message: 'Nama jalan, lokasi, dan arah harus diisi' });
         }
 
-        db.query('UPDATE jalur SET nama_jalan = ?, lokasi = ?, arah = ? WHERE id = ?',
-            [nama_jalan, lokasi, arah, id], (err, result) => {
+        db.query('UPDATE jalur SET nama_jalan = ?, lokasi = ?, arah = ?, url = ? WHERE id = ?',
+            [nama_jalan, lokasi, arah, url, id], (err, result) => {
             if (err) return res.status(500).json({ message: 'DB error' });
             if (result.affectedRows === 0) return res.status(404).json({ message: 'Jalur tidak ditemukan' });
             res.json({ message: 'Jalur berhasil diupdate' });
